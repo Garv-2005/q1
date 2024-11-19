@@ -1,0 +1,542 @@
+
+---------------------------------------------
+//subsets of equal sum
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+bool subsetsAreDisjoint(const vector<int>& subset1, const vector<int>& subset2) {
+    unordered_set<int> set1(subset1.begin(), subset1.end());
+    for (int element : subset2) {
+        if (set1.count(element)) {
+            return false;
+        }
+    }
+    return true;
+}
+vector<pair<vector<int>, vector<int>>> findEqualSumSubsets(const vector<int>& S) {
+    int n = S.size();
+    int totalSubsets = 1 << n;
+    unordered_map<int, unordered_map<int, vector<vector<int>>>> subsetSums;
+    vector<pair<vector<int>, vector<int>>> resultPairs;
+
+    for (int subsetMask = 1; subsetMask < totalSubsets; ++subsetMask) {
+        vector<int> subset;
+        int sum = 0;
+        int size = 0;
+
+        for (int i = 0; i < n; ++i) {
+            if (subsetMask & (1 << i)) {
+                subset.push_back(S[i]);
+                sum += S[i];
+                size += 1;
+            }
+        }
+
+        if (subsetSums[size].count(sum)) {
+            for (const auto& existingSubset : subsetSums[size][sum]) {
+                if (subsetsAreDisjoint(existingSubset, subset)) {
+                    resultPairs.push_back({existingSubset, subset});
+                }
+            }
+            subsetSums[size][sum].push_back(subset);
+        } else {
+            subsetSums[size][sum] = {subset};
+        }
+    }
+    return resultPairs;
+}
+
+int main() {
+    vector<int> S = {3,2,4,5};
+    auto pairs = findEqualSumSubsets(S);
+
+    if (!pairs.empty()) {
+        cout << "Pairs:" << endl;
+        for (const auto& pair : pairs) {
+            cout << "{ ";
+            for (int num : pair.first) {
+                cout << num << " ";
+            }
+            cout << "}"<<endl<<"{ ";
+            for (int num : pair.second) {
+                cout << num << " ";
+            }
+            cout << "}" << endl;
+        }
+    } else {
+        cout << "No pairs found." << endl;
+    }
+
+    return 0;
+}
+----------------------------------------------
+//frequency of elements
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+
+using namespace std;
+bool subsetsAreDisjoint(const vector<int>& subset1, const vector<int>& subset2) {
+    unordered_set<int> set1(subset1.begin(), subset1.end());
+    for (int element : subset2) {
+        if (set1.count(element)) {
+            return false;
+        }
+    }
+    return true;
+}
+vector<pair<vector<int>, vector<int>>> findEqualSumSubsets(const vector<int>& S) {
+    int n = S.size();
+    int totalSubsets = 1 << n;
+    unordered_map<int, unordered_map<int, vector<vector<int>>>> subsetSums;
+    vector<pair<vector<int>, vector<int>>> resultPairs;
+
+    for (int subsetMask = 1; subsetMask < totalSubsets; ++subsetMask) {
+        vector<int> subset;
+        int sum = 0;
+        int size = 0;
+
+        for (int i = 0; i < n; ++i) {
+            if (subsetMask & (1 << i)) {
+                subset.push_back(S[i]);
+                sum += S[i];
+                size += 1;
+            }
+        }
+
+        if (subsetSums[size].count(sum)) {
+            for (const auto& existingSubset : subsetSums[size][sum]) {
+                if (subsetsAreDisjoint(existingSubset, subset)) {
+                    resultPairs.push_back({existingSubset, subset});
+                }
+            }
+            subsetSums[size][sum].push_back(subset);
+        } else {
+            subsetSums[size][sum] = {subset};
+        }
+    }
+    return resultPairs;
+}
+
+int main() {
+    vector<int> S = {3,2,4,5};
+    auto pairs = findEqualSumSubsets(S);
+
+    if (!pairs.empty()) {
+        cout << "Pairs:" << endl;
+        for (const auto& pair : pairs) {
+            cout << "{ ";
+            for (int num : pair.first) {
+                cout << num << " ";
+            }
+            cout << "}"<<endl<<"{ ";
+            for (int num : pair.second) {
+                cout << num << " ";
+            }
+            cout << "}" << endl;
+        }
+    } else {
+        cout << "No pairs found." << endl;
+    }
+
+    return 0;
+}
+----------------------------------------------------------
+//insertion sort
+// C++ program for implementation of Insertion Sort
+#include <iostream>
+using namespace std;
+
+/* Function to sort array using insertion sort */
+void insertionSort(int arr[], int n)
+{
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;
+
+        /* Move elements of arr[0..i-1], that are
+           greater than key, to one position ahead
+           of their current position */
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+/* A utility function to print array of size n */
+void printArray(int arr[], int n)
+{
+    for (int i = 0; i < n; ++i)
+        cout << arr[i] << " ";
+    cout << endl;
+}
+
+// Driver method
+int main()
+{
+    int arr[] = { 12, 11, 13, 5, 6 };
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    insertionSort(arr, n);
+    printArray(arr, n);
+
+    return 0;
+}
+
+/* This code is contributed by Hritik Shah. */
+------------------------------------------------
+//bubble sort
+// C++ program for the implementation of Bubble sort
+#include <bits/stdc++.h>
+using namespace std;
+
+void bubbleSort(vector<int>& v) {
+    int n = v.size();
+
+    // Outer loop that corresponds to the number of
+    // elements to be sorted
+    for (int i = 0; i < n - 1; i++) {
+
+        // Last i elements are already
+        // in place
+        for (int j = 0; j < n - i - 1; j++) {
+          
+              // Comparing adjacent elements
+            if (v[j] > v[j + 1])
+              
+                  // Swapping if in the wrong order
+                swap(v[j], v[j + 1]);
+        }
+    }
+}
+
+int main() {
+    vector<int> v = {5, 1, 4, 2, 8};
+
+    // Sorting the vector v
+    bubbleSort(v);
+    for (auto i : v)
+        cout << i << " ";
+    return 0;
+}
+--------------------------------------------------
+//inversions 
+#include <iostream>
+
+using namespace std;
+
+int main() {
+
+int arr[]={2,3,8,6,1};
+
+int n=sizeof(arr)/sizeof(arr[0]);
+
+cout<<"Pairs:"<<endl;
+
+for(int i=0;i<n;i++){
+
+for(int j=i+1;j<n;j++){
+
+if(arr[i]>arr[j]){
+
+cout<<"("<<i+1<<","<<j+1<<")"<<endl;
+
+}
+
+}
+
+}
+
+for(int i=0;i<n;i++){
+
+for(int j=i+1;j<n;j++){
+
+if(arr[i]>arr[j]){
+
+int temp=arr[i];
+
+arr[i]=arr[j];
+
+arr[j]=temp;
+
+}
+
+}
+
+}
+
+cout<<"Increasing order:"<<endl;
+
+for(int i=0;i<n;i++){
+
+cout<<arr[i]<<" ";
+
+}
+}
+--------------------------------------------------
+//Merge sort
+#include <bits/stdc++.h>
+using namespace std;
+
+// Merges two subarrays of arr[].
+// First subarray is arr[left..mid]
+// Second subarray is arr[mid+1..right]
+void merge(vector<int>& arr, int left, 
+                     int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    // Create temp vectors
+    vector<int> L(n1), R(n2);
+
+    // Copy data to temp vectors L[] and R[]
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0;
+    int k = left;
+
+    // Merge the temp vectors back 
+    // into arr[left..right]
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        }
+        else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    // Copy the remaining elements of L[], 
+    // if there are any
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    // Copy the remaining elements of R[], 
+    // if there are any
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+// begin is for left index and end is right index
+// of the sub-array of arr to be sorted
+void mergeSort(vector<int>& arr, int left, int right)
+{
+    if (left >= right)
+        return;
+
+    int mid = left + (right - left) / 2;
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    merge(arr, left, mid, right);
+}
+
+// Function to print a vector
+void printVector(vector<int>& arr)
+{
+    for (int i = 0; i < arr.size(); i++)
+        cout << arr[i] << " ";
+    cout << endl;
+}
+
+// Driver code
+int main()
+{
+    vector<int> arr = { 12, 11, 13, 5, 6, 7 };
+    int n = arr.size();
+
+    cout << "Given vector is \n";
+    printVector(arr);
+
+    mergeSort(arr, 0, n - 1);
+
+    cout << "\nSorted vector is \n";
+    printVector(arr);
+    return 0;
+}
+--------------------------------------------------
+//inversion 
+#include <bits/stdc++.h>
+using namespace std;
+
+int mergesort_inv(int a[], int tmp[], int l, int r);
+
+int merge_inv(int a[], int tmp[], int l, int half, int r);
+int mergeSort(int a[], int n)	
+{
+	int tmp[n];
+	return mergesort_inv(a, tmp, 0, n - 1);
+}
+
+int mergesort_inv(int a[], int tmp[], int l, int r)	
+{
+	int half, inv_cnt = 0;
+	if (r > l)
+	{
+		half = (r + l) / 2;
+		inv_cnt = inv_cnt + mergesort_inv(a, tmp, l, half);
+		inv_cnt = inv_cnt + mergesort_inv(a, tmp, half + 1, r);
+
+		inv_cnt += merge_inv(a, tmp, l, half + 1, r);	
+	}
+	return inv_cnt;
+}
+
+int merge_inv(int a[], int tmp[], int l, int half, int r)
+{
+	int i, j, k;
+	int inv_cnt = 0;
+
+	i = l;	
+	j = half;	
+	k = l;	
+
+	while ((i <= half - 1) && (j <= r))
+	{
+		if (a[i] <= a[j])
+		{
+			tmp[k] = a[i];
+			i++;
+			k++;
+		}
+		else
+		{
+			tmp[k] = a[j];
+			k++;
+			j++;
+			inv_cnt = inv_cnt + (half - i);	
+		}
+	}
+
+	while (i <= half - 1)
+	{
+		tmp[k] = a[i];
+		k++;
+		i++;
+	}
+	while (j <= r)
+	{
+		tmp[k] = a[j];
+		k++;
+		j++;
+	}
+
+	for (i = l; i <= r; i++)
+		a[i] = tmp[i];
+
+	return inv_cnt;
+}
+
+int main()
+{
+	int a[] = { 2,3,8,6,1 };
+	int n = sizeof(a) / sizeof(a[0]);
+	for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (a[i] > a[j]) {
+                cout << "Inversion " << ": (" << i + 1 << "," << j + 1 << ')' << endl;
+            }
+        }
+    }
+	int res = mergeSort(a, n);
+	cout << "No of inversions: " << res;
+	return 0;
+}
+-----------------------------------------------------
+//sorting x cood and y coord 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Point {
+    int x, y;
+};
+
+void merge(vector<Point>& arr, int left, int mid, int right, bool sortByX) {
+    vector<Point> temp(right - left + 1);
+    int i = left, j = mid + 1, k = 0;
+
+    while (i <= mid && j <= right) {
+        if (sortByX ? arr[i].x <= arr[j].x : arr[i].y <= arr[j].y) {
+            temp[k++] = arr[i++];
+        } else {
+            temp[k++] = arr[j++];
+        }
+    }
+
+    while (i <= mid) {
+        temp[k++] = arr[i++];
+    }
+
+    while (j <= right) {
+        temp[k++] = arr[j++];
+    }
+
+    for (i = left, k = 0; i <= right; i++, k++) {
+        arr[i] = temp[k];
+    }
+}
+void sortPoints(vector<Point>& arr, int left, int right, bool sortByX) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        sortPoints(arr, left, mid, sortByX);
+        sortPoints(arr, mid + 1, right, sortByX);
+
+        merge(arr, left, mid, right, sortByX);
+    }
+}
+void printPoints(const vector<Point>& arr) {
+    for (const auto& point : arr) {
+        cout << "(" << point.x << ", " << point.y << ")" << endl;
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of points: ";
+    cin >> n;
+
+    vector<Point> points(n);
+    cout << "Enter the points (x y):" << endl;
+    for (auto& point : points) {
+        cin >> point.x >> point.y;
+    }
+
+    sortPoints(points, 0, n - 1, true);
+    cout << "Points sorted by x coordinates:" << endl;
+    printPoints(points);
+
+    sortPoints(points, 0, n - 1, false);
+    cout << "Points sorted by y coordinates:" << endl;
+    printPoints(points);
+
+    sortPoints(points, 0, n - 1, false);
+    reverse(points.begin(), points.end());
+    cout << "Points sorted by (x + y) / 2 in decreasing order:" << endl;
+    printPoints(points);
+
+    return 0;
+}
+-------------------------------------------------------
+//

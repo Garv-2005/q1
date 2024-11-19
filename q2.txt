@@ -1,0 +1,537 @@
+//KMP
+#include <bits/stdc++.h>
+using namespace std;
+
+// Fills lps[] for given pattern pat
+void computeLPSArray(string& pat, int M, vector<int>& lps)
+{
+    // Length of the previous longest prefix suffix
+    int len = 0;
+
+    // lps[0] is always 0
+    lps[0] = 0;
+
+    // loop calculates lps[i] for i = 1 to M-1
+    int i = 1;
+    while (i < M) {
+        if (pat[i] == pat[len]) {
+            len++;
+            lps[i] = len;
+            i++;
+        }
+        else // (pat[i] != pat[len])
+        {
+            if (len != 0) {
+                len = lps[len - 1];
+            }
+            else // if (len == 0)
+            {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+}
+
+// Prints occurrences of pat in txt
+vector<int> KMPSearch(string& pat, string& txt)
+{
+    int M = pat.length();
+    int N = txt.length();
+
+    // Create lps[] that will hold the longest prefix suffix
+    // values for pattern
+    vector<int> lps(M);
+
+    vector<int> result;
+
+    // Preprocess the pattern (calculate lps[] array)
+    computeLPSArray(pat, M, lps);
+
+    int i = 0; // index for txt
+    int j = 0; // index for pat
+    while ((N - i) >= (M - j)) {
+        if (pat[j] == txt[i]) {
+            j++;
+            i++;
+        }
+
+        if (j == M) {
+            result.push_back(i - j + 1);
+            j = lps[j - 1];
+        }
+
+        // Mismatch after j matches
+        else if (i < N && pat[j] != txt[i]) {
+
+            // Do not match lps[0..lps[j-1]] characters,
+            // they will match anyway
+            if (j != 0)
+                j = lps[j - 1];
+            else
+                i = i + 1;
+        }
+    }
+    return result;
+}
+
+int main()
+{
+    string txt = "geeksforgeeks";
+    string pat = "geeks";
+    vector<int> result = KMPSearch(pat, txt);
+
+    // Print all the occurance (1-based indices)
+    for (int i = 0; i < result.size(); i++) {
+        cout << result[i] << " ";
+    }
+    return 0;
+}
+---------------------------------------
+//LCS
+// The longest common subsequence in C++
+
+#include <iostream>
+#include<cstring>
+using namespace std;
+
+void lcsAlgo(char *S1, char *S2, int m, int n) {
+  int LCS_table[m + 1][n + 1];
+
+
+ 
+  for (int i = 0; i <= m; i++) {
+    for (int j = 0; j <= n; j++) {
+      if (i == 0 || j == 0)
+        LCS_table[i][j] = 0;
+      else if (S1[i - 1] == S2[j - 1])
+        LCS_table[i][j] = LCS_table[i - 1][j - 1] + 1;
+      else
+        LCS_table[i][j] = max(LCS_table[i - 1][j], LCS_table[i][j - 1]);
+    }
+  }
+
+  int index = LCS_table[m][n];
+  char lcsAlgo[index + 1];
+  lcsAlgo[index] = '\0';
+
+  int i = m, j = n;
+  while (i > 0 && j > 0) {
+    if (S1[i - 1] == S2[j - 1]) {
+      lcsAlgo[index - 1] = S1[i - 1];
+      i--;
+      j--;
+      index--;
+    }
+
+    else if (LCS_table[i - 1][j] > LCS_table[i][j - 1])
+      i--;
+    else
+      j--;
+  }
+  
+  cout << "S1 : " << S1 << "\nS2 : " << S2 << "\nLCS: " << lcsAlgo << "\n";
+}
+
+int main() {
+  char S1[] = "stone";
+  int size1= sizeof(S1) / sizeof(S1[0]);
+  for(int i=0;i<size1;i++){
+  	S1[i]=tolower(S1[i]);
+  }
+  char S2[] = "longest";
+  int size2= sizeof(S2) / sizeof(S2[0]);
+  for(int i=0;i<size2;i++){
+  	S2[i]=tolower(S2[i]);
+  }
+  int m = strlen(S1);
+  cout<<m<<endl;
+  cout<<size1;
+  int n = strlen(S2);
+
+  lcsAlgo(S1, S2, m, n);
+}
+---------------------------------------
+//matmul
+#include <iostream>
+#include <climits>
+
+// Function to print the cost matrix
+void printCostMatrix(int cost[][10], int n) {
+    for (int i = 1; i < n; ++i) {
+        for (int j = 1; j < n; ++j) {
+            if (cost[i][j] == INT_MAX) {
+                std::cout << "INF\t";
+            } else {
+                std::cout << cost[i][j] << "\t";
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+// Function to perform matrix chain multiplication
+int matrixChainMultiplication(int dims[], int n) {
+    int cost[10][10];
+
+    // Initialize cost matrix with 0
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cost[i][j] = 0;
+        }
+    }
+
+    for (int length = 2; length < n; ++length) {
+        for (int i = 1; i < n - length + 1; ++i) {
+            int j = i + length - 1;
+            cost[i][j] = INT_MAX;
+            for (int k = i; k <= j - 1; ++k) {
+                int q = cost[i][k] + cost[k + 1][j] + dims[i - 1] * dims[k] * dims[j];
+                if (q < cost[i][j]) {
+                    cost[i][j] = q;
+                }
+                std::cout << "Cost of multiplying M" << i << " to M" << k << " and M" << (k + 1) << " to M" << j << " is " << q << std::endl;
+            }
+        }
+    }
+
+    // Print the cost matrix
+    printCostMatrix(cost, n);
+
+    return cost[1][n - 1];
+}
+
+int main() {
+    int n;
+    std::cout << "Enter the number of matrices: ";
+    std::cin >> n;
+    int dims[10];
+    std::cout << "Enter the dimensions: ";
+    for (int i = 0; i <= n; ++i) {
+        std::cin >> dims[i];
+    }
+    std::cout << "Minimum number of multiplications is " << matrixChainMultiplication(dims, n + 1) << std::endl;
+    return 0;
+}
+---------------------------------------
+//Huffman
+#include <iostream>
+#include <queue>
+#include <unordered_map>
+#include <vector>
+using namespace std;
+
+// A Huffman tree node
+struct Node {
+    char ch;
+    int freq;
+    Node* left;
+    Node* right;
+    Node(char ch, int freq)
+        : ch(ch)
+        , freq(freq)
+        , left(nullptr)
+        , right(nullptr)
+    {
+    }
+    Node(char ch, int freq, Node* left, Node* right)
+        : ch(ch)
+        , freq(freq)
+        , left(left)
+        , right(right)
+    {
+    }
+};
+
+// Comparison object to be used to order the heap
+struct compare {
+    bool operator()(Node* l, Node* r)
+    {
+        return l->freq > r->freq;
+    }
+};
+
+// Function to print the Huffman Codes
+void printCodes(Node* root, string str,
+                unordered_map<char, string>& huffmanCode)
+{
+    if (root == nullptr)
+        return;
+
+    // Found a leaf node
+    if (!root->left && !root->right) {
+        huffmanCode[root->ch] = str;
+    }
+
+    printCodes(root->left, str + "0", huffmanCode);
+    printCodes(root->right, str + "1", huffmanCode);
+}
+
+// Function to build the Huffman Tree and generate Huffman
+// Codes
+void buildHuffmanTree(string text)
+{
+    // Count frequency of appearance of each character and
+    // store it in a map
+    unordered_map<char, int> freq;
+    for (char ch : text) {
+        freq[ch]++;
+    }
+
+    // Create a priority queue to store live nodes of the
+    // Huffman tree
+    priority_queue<Node*, vector<Node*>, compare> pq;
+
+    // Create a leaf node for each character and add it to
+    // the priority queue
+    for (auto pair : freq) {
+        pq.push(new Node(pair.first, pair.second));
+    }
+
+    // Do till there is more than one node in the queue
+    while (pq.size() != 1) {
+        // Remove the two nodes of highest priority (lowest
+        // frequency) from the queue
+        Node* left = pq.top();
+        pq.pop();
+        Node* right = pq.top();
+        pq.pop();
+
+        // Create a new internal node with these two nodes
+        // as children and with frequency equal to the sum
+        // of the two nodes' frequencies
+        int sum = left->freq + right->freq;
+        pq.push(new Node('\0', sum, left, right));
+    }
+
+    // Root stores pointer to the root of the Huffman Tree
+    Node* root = pq.top();
+
+    // Traverse the Huffman Tree and store Huffman Codes in
+    // a map
+    unordered_map<char, string> huffmanCode;
+    printCodes(root, "", huffmanCode);
+
+    // Print Huffman Codes
+    cout << "Huffman Codes:\n";
+    for (auto pair : huffmanCode) {
+        cout << pair.first << " " << pair.second << "\n";
+    }
+
+    // Print original string
+    cout << "\nOriginal string:\n" << text << "\n";
+
+    // Print encoded string
+    string str = "";
+    for (char ch : text) {
+        str += huffmanCode[ch];
+    }
+    cout << "\nEncoded string:\n" << str << "\n";
+
+    // Function to decode a given Huffman encoded string
+    auto decode = [&](string str) {
+        cout << "\nDecoded string:\n";
+        Node* curr = root;
+        for (char bit : str) {
+            if (bit == '0') {
+                curr = curr->left;
+            }
+            else {
+                curr = curr->right;
+            }
+
+            // Reached a leaf node
+            if (!curr->left && !curr->right) {
+                cout << curr->ch;
+                curr = root;
+            }
+        }
+        cout << "\n";
+    };
+
+    decode(str);
+}
+
+int main()
+{
+    string text = "stringstr";  //freq=(s=2,t=2,r=2,i=1,n=1,g=1)
+    buildHuffmanTree(text);
+    return 0;
+}
+________________________________________
+//Rabin Karp
+#include <bits/stdc++.h>
+using namespace std;
+
+// d is the number of characters in the input alphabet
+#define d 256
+
+/* pat -> pattern
+	txt -> text
+	q -> A prime number
+*/
+void search(char pat[], char txt[], int q)
+{
+	int M = strlen(pat);
+	int N = strlen(txt);
+	int i, j;
+	int p = 0; // hash value for pattern
+	int t = 0; // hash value for txt
+	int h = 1;
+
+	// The value of h would be "pow(d, M-1)%q"
+	for (i = 0; i < M - 1; i++)
+		h = (h * d) % q;
+
+	// Calculate the hash value of pattern and first
+	// window of text
+	for (i = 0; i < M; i++) {
+		p = (d * p + pat[i]) % q;
+		t = (d * t + txt[i]) % q;
+	}
+
+	// Slide the pattern over text one by one
+	for (i = 0; i <= N - M; i++) {
+
+		// Check the hash values of current window of text
+		// and pattern. If the hash values match then only
+		// check for characters one by one
+		if (p == t) {
+			/* Check for characters one by one */
+			for (j = 0; j < M; j++) {
+				if (txt[i + j] != pat[j]) {
+					break;
+				}
+			}
+
+			// if p == t and pat[0...M-1] = txt[i, i+1,
+			// ...i+M-1]
+
+			if (j == M)
+				cout << "Pattern found at index " << i
+					<< endl;
+		}
+
+		// Calculate hash value for next window of text:
+		// Remove leading digit, add trailing digit
+		if (i < N - M) {
+			t = (d * (t - txt[i] * h) + txt[i + M]) % q;
+
+			// We might get negative value of t, converting
+			// it to positive
+			if (t < 0)
+				t = (t + q);
+		}
+	}
+}
+
+/* Driver code */
+int main()
+{
+	char txt[] = "THIS IS A TEST STRING";
+	char pat[] = "IS";
+
+	// we mod to avoid overflowing of value but we should
+	// take as big q as possible to avoid the collison
+	int q = INT_MAX;
+
+	// Function Call
+	search(pat, txt, q);
+	return 0;
+}
+----------------------------------------
+//naivepattern
+#include <iostream>
+#include <string>
+using namespace std;
+
+void search(string pat, string txt) {
+    int M = pat.size();
+    int N = txt.size();
+
+    // A loop to slide pat[] one by one
+    for (int i = 0; i <= N - M; i++) {
+        int j;
+
+        // For current index i, check for pattern match
+        for (j = 0; j < M; j++) {
+            if (txt[i + j] != pat[j]) {
+                break;
+            }
+        }
+
+        // If pattern matches at index i
+        if (j == M) {
+            cout << "Pattern found at index " << i << endl;
+        }
+    }
+}
+
+int main() {
+    // Example 1
+    string txt1 = "AABAACAADAABAABA";
+    string pat1 = "AABA";
+    cout << "Example 1: " << endl;
+    search(pat1, txt1);
+    
+    // Example 2
+    string txt2 = "agd";
+    string pat2 = "g";
+    cout << "\nExample 2: " << endl;
+    search(pat2, txt2);
+
+    return 0;
+}
+----------------------------------------
+//travellingsalesman
+// CPP program to implement traveling salesman
+// problem using naive approach.
+#include <bits/stdc++.h>
+using namespace std;
+#define V 4
+
+// implementation of traveling Salesman Problem
+int travllingSalesmanProblem(int graph[][V], int s)
+{
+	// store all vertex apart from source vertex
+	vector<int> vertex;
+	for (int i = 0; i < V; i++)
+		if (i != s)
+			vertex.push_back(i);
+
+	// store minimum weight Hamiltonian Cycle.
+	int min_path = INT_MAX;
+	do {
+
+		// store current Path weight(cost)
+		int current_pathweight = 0;
+
+		// compute current path weight
+		int k = s;
+		for (int i = 0; i < vertex.size(); i++) {
+			current_pathweight += graph[k][vertex[i]];
+			k = vertex[i];
+		}
+		current_pathweight += graph[k][s];
+
+		// update minimum
+		min_path = min(min_path, current_pathweight);
+
+	} while (
+		next_permutation(vertex.begin(), vertex.end()));
+
+	return min_path;
+}
+
+// Driver Code
+int main()
+{
+	// matrix representation of graph
+	int graph[][V] = { { 0, 10, 15, 20 },
+					{ 10, 0, 35, 25 },
+					{ 15, 35, 0, 30 },
+					{ 20, 25, 30, 0 } };
+	int s = 0;
+	cout << travllingSalesmanProblem(graph, s) << endl;
+	return 0;
+}
